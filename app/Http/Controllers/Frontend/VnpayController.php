@@ -22,6 +22,8 @@ class VnpayController extends Controller
             'email' => 'required|email|max:255',
             'sdt' => 'required|string|max:15',
             'diachi' => 'required|string|max:255',
+            'tinh' => 'required|string|max:255',
+            'xa_phuong' => 'required|string|max:255',
             'amount' => 'required|numeric|min:1000',
         ]);
 
@@ -38,6 +40,8 @@ class VnpayController extends Controller
             'email' => $request->email,
             'sdt' => $request->sdt,
             'diachi' => $request->diachi,
+            'tinh' => $request->tinh,
+            'xa_phuong' => $request->xa_phuong,
             'payment_method' => 'vnpay',
             'tongtien' => $total,
             'trang_thai' => 'Chờ thanh toán',
@@ -52,6 +56,11 @@ class VnpayController extends Controller
                 'giasp' => $item['giasp'],
                 'tongtien' => $item['giasp'] * $item['quantity'],
             ]);
+        }
+
+        // Lưu order_id vào session cho user không đăng nhập
+        if (!Auth::check()) {
+            session(['order_id' => $order->id, 'order_email' => $order->email]);
         }
 
         session()->forget('cart');

@@ -8,9 +8,29 @@ use App\Models\Order;
 
 class QlCheckoutController extends Controller
 {
-    public function qldh(){
-        $orders = Order::orderBy('created_at', 'desc')->paginate(10);
-        return view('backend.donhang.qldh', compact('orders'));
+    public function qldh(Request $request){
+        $tab = $request->get('tab', 'all');
+        
+        $query = Order::orderBy('created_at', 'desc');
+        
+        if ($tab === 'guest') {
+            $query->whereNull('user_id');
+            $title = 'Đơn hàng khách vãng lai';
+        } elseif ($tab === 'customer') {
+            $query->whereNotNull('user_id');
+            $title = 'Đơn hàng khách đăng nhập';
+        } else {
+            $title = 'Tất cả đơn hàng';
+        }
+        
+        $orders = $query->paginate(10);
+        
+        if ($request->ajax()) {
+            $html = view('backend.donhang.partials.orders_table', compact('orders'))->render();
+            return response()->json(['html' => $html]);
+        }
+        
+        return view('backend.donhang.qldh', compact('orders', 'tab', 'title'));
     }
 
     public function showdh($id){

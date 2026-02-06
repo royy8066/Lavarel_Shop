@@ -300,6 +300,11 @@
                     </select>
                 </div>
 
+                <div class="mb-3">
+                    <label style="padding-top: 20px" for="stock" class="form-label">Số lượng tồn kho</label>
+                    <input type="number" name="stock" id="stock" class="form-control" value="0" min="0" required>
+                </div>
+
                 <button style="margin-top: 20px" type="submit" class="btn btn-success">Thêm sản phẩm</button>
             </form>
         </div>  

@@ -10,7 +10,7 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'fullname', 'email', 'sdt', 'diachi', 'tongtien', 'payment_method', 'trang_thai', 'vnpay_txn_ref',
+        'user_id', 'fullname', 'email', 'sdt', 'tinh', 'quan_huyen', 'xa_phuong', 'dia_chi_chi_tiet', 'diachi', 'tongtien', 'payment_method', 'trang_thai', 'vnpay_txn_ref', 'momo_txn_ref',
     ];
 
     public function orderDetails()

@@ -299,6 +299,8 @@
             <p><strong>Khách hàng:</strong> {{ $order->fullname }}</p>
             <p><strong>Email:</strong> {{ $order->email }}</p>
             <p><strong>Địa chỉ:</strong> {{ $order->diachi }}</p>
+            <p><strong>Tỉnh/Thành phố:</strong> {{ $order->tinh }}</p>
+            <p><strong>Xã/Phường:</strong> {{ $order->xa_phuong }}</p>
             <p><strong>Phương thức thanh toán:</strong> {{ $order->payment_method }}</p>
             <p><strong>Trạng thái:</strong> {{ $order->trang_thai }}</p>
 

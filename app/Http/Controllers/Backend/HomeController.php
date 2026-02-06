@@ -22,29 +22,70 @@ class HomeController extends Controller
         $donXacNhan = Order::where('trang_thai', 'Đơn hàng đã được gửi đi')->count();
         $tongSanPham = Product::count();
 
-        $namHienTai = Carbon::now()->year;
+        // Tính tỷ lệ tăng trưởng (so với tháng trước)
+        $thangTruoc = Carbon::now()->subMonth();
+        $doanhThuThangTruoc = Order::whereMonth('created_at', $thangTruoc->month)
+            ->whereYear('created_at', $thangTruoc->year)
+            ->whereIn('trang_thai', ['Đơn hàng đã được gửi đi', 'Thanh toán thành công'])
+            ->sum('tongtien');
+        
+        $thangHienTai = Carbon::now();
+        $doanhThuThangHienTai = Order::whereMonth('created_at', $thangHienTai->month)
+            ->whereYear('created_at', $thangHienTai->year)
+            ->whereIn('trang_thai', ['Đơn hàng đã được gửi đi', 'Thanh toán thành công'])
+            ->sum('tongtien');
+        
+        $tangTruong = $doanhThuThangTruoc > 0 
+            ? round((($doanhThuThangHienTai - $doanhThuThangTruoc) / $doanhThuThangTruoc) * 100, 1)
+            : 0;
+
+        // Lấy dữ liệu biểu đồ 12 tháng gần nhất
         $dataChart = Order::select(
                 DB::raw('MONTH(created_at) as month'),
+                DB::raw('YEAR(created_at) as year'),
                 DB::raw('SUM(tongtien) as total')
             )
-            ->whereYear('created_at', $namHienTai)
-            ->where('trang_thai', 'Đơn hàng đã được gửi đi')
-            ->groupBy(DB::raw('MONTH(created_at)'))
+            ->whereIn('trang_thai', ['Đơn hàng đã được gửi đi', 'Thanh toán thành công'])
+            ->where('created_at', '>=', Carbon::now()->subMonths(11))
+            ->groupBy(DB::raw('YEAR(created_at), MONTH(created_at)'))
+            ->orderBy('year')
             ->orderBy('month')
             ->get();
 
+        // Tạo mảng dữ liệu cho 12 tháng
+        $chartData = [];
         $labels = [];
-        $doanhThuData = [];
-
-        for ($i = 1; $i <= 12; $i++) {
-            $labels[] = 'Tháng ' . $i;
-            $thang = $dataChart->firstWhere('month', $i);
-            $doanhThuData[] = $thang ? $thang->total : 0;
+        
+        for ($i = 11; $i >= 0; $i--) {
+            $date = Carbon::now()->subMonths($i);
+            $month = $date->month;
+            $year = $date->year;
+            
+            $labels[] = 'T' . $month . '/' . substr($year, -2);
+            
+            $monthData = $dataChart->where('month', $month)->where('year', $year)->first();
+            $chartData[] = $monthData ? (int)$monthData->total : 0;
         }
+
+        // Lấy sản phẩm bán chạy nhất
+        $topProducts = DB::table('order_details')
+            ->join('product', 'order_details.product_id', '=', 'product.id')
+            ->join('orders', 'order_details.order_id', '=', 'orders.id')
+            ->select(
+                'product.ten_sanpham',
+                DB::raw('SUM(order_details.soluong) as total_sold'),
+                DB::raw('COUNT(order_details.id) as order_count')
+            )
+            ->whereIn('orders.trang_thai', ['Đơn hàng đã được gửi đi', 'Thanh toán thành công'])
+            ->where('orders.created_at', '>=', Carbon::now()->subDays(30))
+            ->groupBy('product.id', 'product.ten_sanpham')
+            ->orderBy('total_sold', 'desc')
+            ->limit(5)
+            ->get();
 
         return view('backend.index', compact(
             'tongDoanhThu', 'tongDonHang', 'donCho', 'donXacNhan',
-            'tongSanPham', 'labels', 'doanhThuData'
+            'tongSanPham', 'tangTruong', 'labels', 'chartData', 'topProducts'
         ));
     }
 

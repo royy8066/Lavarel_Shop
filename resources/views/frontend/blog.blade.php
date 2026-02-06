@@ -20,8 +20,8 @@
             </div>
             <div class="right">
                 <ul>
-                    <li><a href="mailto:linhclear@gmail.com"><i class="bi bi-envelope"></i> linhclear@gmail.com</a></li>
-                    <li><a href="tel:0337 263 708"><i class="bi bi-telephone"></i> 0337 263 708</a></li>
+                    <li><a href="mailto:linhclear@gmail.com"><i class="bi bi-envelope"></i>rimdu12@gmail.com</a></li>
+                    <li><a href="tel:033 850 6457"><i class="bi bi-telephone"></i> 033 850 6457</a></li>
                     <!-- <li><a href="./carts.php"><i class="bi bi-cart3" title="Giỏ hàng"></i> Giỏ hàng</a></li> -->
                 </ul>
             </div>
@@ -122,8 +122,8 @@
                     <p>Thông tin liên hệ:</p>
                     <p>TRẦM HƯƠNG TIÊN PHƯỚC</p>
                     <p>Địa chỉ: Thôn Địch Tây, Tiên Phong, Tiên Phước, Quảng Nam</p>
-                    <p>Email: linhclear@gmail.com</p>
-                    <p>Hotline: 0337 263 708</p>
+                    <p>Email:rimdu12@gmail.com</p>
+                    <p>Hotline: 033 850 6457</p>
                 </div>
             </div>
         </div>

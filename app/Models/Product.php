@@ -16,4 +16,14 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class, 'danhmuc_id');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class)->approved()->latest();
+    }
+
+    public function approvedComments()
+    {
+        return $this->comments()->approved();
+    }
 }

@@ -288,61 +288,25 @@
 
 
         <div class="container mt-4">
-            <h3>Danh sách đơn hàng</h3>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Khách hàng</th>
-                        <th>SĐT</th>
-                        <th>Phương thức thanh toán</th>
-                        <th>Tổng tiền</th>
-                        <th>Trạng thái</th>
-                        <th>Ngày tạo</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($orders as $order)
-                        <tr>
-                            <td>{{ $order->id }}</td>
-                            <td>{{ $order->fullname }}</td>
-                            <td>{{ $order->sdt }}</td>
-                            <td>{{ $order->payment_method }}</td>
-                            <td>{{ number_format($order->tongtien) }} đ</td>
-                            <td>
-                                <a href="{{ route('backend.donhang.showdh', $order->id) }}" class="btn btn-info btn-sm">
-                                    <i class="fa fa-eye"></i>
-                                </a>
-                                @if($order->trang_thai == 'Chờ xác nhận')
-                                    <form action="{{ route('backend.donhang.duyetdh', $order->id) }}" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('PUT')
-                                        <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Xác nhận duyệt đơn hàng này?')">
-                                            <i class="fa fa-check"></i>
-                                        </button>
-                                    </form>
-                                @endif
-                            </td>
-                            <td>{{ $order->created_at->format('d/m/Y') }}</td>
-                            <td>
-                                <a href="{{ route('backend.donhang.showdh', $order->id) }}">
-                                    <i class="fas fa-eye" style="margin-right:5px"></i>
-                                </a>
-
-                                <form action="{{ route('backend.donhang.delete', $order->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Bạn có chắc muốn xóa đơn hàng này không?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-            {{ $orders->links() }}
+            <h3>{{ $title }}</h3>
+            
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs" role="tablist" style="margin-bottom: 20px;">
+                <li role="presentation" class="{{ $tab === 'all' ? 'active' : '' }}">
+                    <a href="{{ route('backend.donhang.qldh', ['tab' => 'all']) }}">Tất cả đơn hàng</a>
+                </li>
+                <li role="presentation" class="{{ $tab === 'customer' ? 'active' : '' }}">
+                    <a href="{{ route('backend.donhang.qldh', ['tab' => 'customer']) }}">Khách đăng nhập</a>
+                </li>
+                <li role="presentation" class="{{ $tab === 'guest' ? 'active' : '' }}">
+                    <a href="{{ route('backend.donhang.qldh', ['tab' => 'guest']) }}">Khách vãng lai</a>
+                </li>
+            </ul>
+            
+            <!-- Orders Table -->
+            <div id="orders-table">
+                @include('backend.donhang.partials.orders_table', ['orders' => $orders])
+            </div>
         </div>
 
     </div>
@@ -352,6 +316,49 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/plugins/metisMenu/jquery.metisMenu.js"></script>
     <script src="/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Handle tab clicks with AJAX
+            $('.nav-tabs a').on('click', function(e) {
+                e.preventDefault();
+                
+                // Update active tab
+                $('.nav-tabs li').removeClass('active');
+                $(this).parent('li').addClass('active');
+                
+                // Show loading state
+                $('#orders-table').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i><p>Đang tải dữ liệu...</p></div>');
+                
+                // Get the URL from the clicked tab
+                var url = $(this).attr('href');
+                
+                // Load the content via AJAX
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        $('#orders-table').html(response.html);
+                        
+                        // Update browser URL without reloading the page
+                        history.pushState(null, null, url);
+                    },
+                    error: function(xhr) {
+                        $('#orders-table').html('<div class="alert alert-danger">Có lỗi xảy ra khi tải dữ liệu. Vui lòng thử lại sau.</div>');
+                        console.error('Error loading orders:', xhr.responseText);
+                    }
+                });
+            });
+            
+            // Handle browser back/forward buttons
+            window.onpopstate = function(event) {
+                if (event.state) {
+                    location.reload();
+                }
+            };
+        });
+    </script>
 
     <!-- Flot -->
     <script src="/js/plugins/flot/jquery.flot.js"></script>

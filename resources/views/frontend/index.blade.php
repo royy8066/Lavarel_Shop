@@ -10,6 +10,73 @@
     <link rel="stylesheet" href="../assets/css/bootstrap5.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #e5e7eb;
+            --card: #ffffff;
+            --shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        [data-theme="dark"] {
+            --bg: #0b1220;
+            --text: #e5e7eb;
+            --muted: #94a3b8;
+            --border: #1f2937;
+            --card: #0f172a;
+            --shadow: 0 2px 12px rgba(0,0,0,0.4);
+        }
+        body { background: var(--bg); color: var(--text); }
+        .theme-toggle { display:inline-flex; align-items:center; gap:8px; font-size:14px; color: var(--muted); cursor:pointer; border:1px solid var(--border); padding:6px 10px; border-radius:8px; background: transparent; }
+    </style>
+    <style>
+        /* Floating chat widget */
+        .chat-fab {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            box-shadow: var(--shadow);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            z-index: 9999;
+        }
+        .chat-widget {
+            position: fixed;
+            right: 20px;
+            bottom: 84px;
+            width: 340px;
+            max-width: calc(100vw - 40px);
+            background: var(--card);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 9999;
+        }
+        .chat-widget.open { display: flex; }
+        .cw-header { padding: 10px 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+        .cw-body { padding: 12px; height: 320px; overflow-y: auto; background: var(--bg); }
+        .cw-footer { padding: 10px; border-top: 1px solid var(--border); background: var(--card); display: flex; gap: 8px; }
+        .cw-input { flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); }
+        .cw-send { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: #0d6efd; color: #fff; }
+        .cw-msg { margin-bottom: 10px; }
+        .cw-bubble { display: inline-block; padding: 8px 12px; border-radius: 14px; max-width: 80%; white-space: pre-wrap; }
+        .cw-me   { text-align: right; }
+        .cw-me .cw-bubble { background: #0d6efd; color: #fff; }
+        .cw-bot .cw-bubble { background: var(--bubble-bot-bg, #f1f3f5); color: var(--bubble-bot-text, #111827); }
+        .cw-close { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 4px 8px; border-radius: 8px; }
+        @media (max-width: 480px) { .chat-widget { right: 10px; left: 10px; width: auto; } }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -20,8 +87,8 @@
             </div>
             <div class="right">
                 <ul>
-                    <li><a href="mailto:linhclear@gmail.com"><i class="bi bi-envelope"></i> linhclear@gmail.com</a></li>
-                    <li><a href="tel:0337 263 708"><i class="bi bi-telephone"></i> 0337 263 708</a></li>
+                    <li><a href="mailto:linhclear@gmail.com"><i class="bi bi-envelope"></i>rimdu12@gmail.com</a></li>
+                    <li><a href="tel:033 850 6457"><i class="bi bi-telephone"></i> 033 850 6457</a></li>
                     <!-- <li><a href="./view/carts.php"><i class="bi bi-cart3" title="Giỏ hàng"></i> Giỏ hàng</a></li> -->
                 </ul>
             </div>
@@ -47,6 +114,8 @@
                     <button type="submit" class="btn-search"><i class="bi bi-search"></i></button>
                 </form>
             </div>
+            <div class="ms-2">
+                        </div>
             <div class="btn-login">
                 <div class="icon-carts" data-count="{{ session('cart') ? count(session('cart')) : 0 }}">
                     <a href="{{ route('frontend.cart') }}">
@@ -276,7 +345,109 @@
         </div>
     </footer>
     <!-- JavaScript -->
+    <div class="chat-fab" id="chatFab" title="Chat với trợ lý">
+        <i class="bi bi-chat-dots"></i>
+    </div>
+    <div class="chat-widget" id="chatWidget" aria-live="polite">
+        <div class="cw-header">
+            <span>Trợ lý Chat</span>
+            <button class="cw-close" id="chatClose" type="button">Đóng</button>
+        </div>
+        <div class="cw-body" id="cwBody">
+            <div class="cw-msg cw-bot"><div class="cw-bubble">Xin chào! Mình có thể giúp gì cho bạn?</div></div>
+        </div>
+        <div class="cw-footer">
+            <input id="cwInput" class="cw-input" placeholder="Nhập tin nhắn..." autocomplete="off" />
+            <button id="cwSend" class="cw-send" type="button">Gửi</button>
+        </div>
+    </div>
+
     <script src="../assets/js/javascript.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-element-bundle.min.js"></script>
+    <script>
+      (function(){
+        const key='theme-preference';
+        const root=document.documentElement;
+        const btn=document.getElementById('themeToggle');
+        const label=document.getElementById('themeLabel');
+        if(btn){
+          const apply=(mode)=>{
+            if(mode==='dark'){ root.setAttribute('data-theme','dark'); if(label) label.textContent='Dark'; }
+            else { root.removeAttribute('data-theme'); if(label) label.textContent='Light'; }
+          };
+          const saved=localStorage.getItem(key)||'light';
+          apply(saved);
+          btn.addEventListener('click',()=>{
+            const next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+            localStorage.setItem(key,next);
+            apply(next);
+          });
+        }
+
+        // Floating chat widget logic
+        const fab = document.getElementById('chatFab');
+        const widget = document.getElementById('chatWidget');
+        const closeBtn = document.getElementById('chatClose');
+        const body = document.getElementById('cwBody');
+        const input = document.getElementById('cwInput');
+        const send = document.getElementById('cwSend');
+
+        function append(text, me){
+          const wrap = document.createElement('div');
+          wrap.className = 'cw-msg ' + (me ? 'cw-me' : 'cw-bot');
+          const b = document.createElement('div');
+          b.className = 'cw-bubble';
+          b.textContent = text;
+          wrap.appendChild(b);
+          body.appendChild(wrap);
+          body.scrollTop = body.scrollHeight;
+        }
+
+        function typing(on){
+          if(on){
+            const wrap = document.createElement('div');
+            wrap.id = 'cwTyping';
+            wrap.className = 'cw-msg cw-bot';
+            const b = document.createElement('div');
+            b.className = 'cw-bubble';
+            b.textContent = 'Đang soạn...';
+            wrap.appendChild(b);
+            body.appendChild(wrap);
+            body.scrollTop = body.scrollHeight;
+          } else {
+            const t = document.getElementById('cwTyping');
+            if(t) t.remove();
+          }
+        }
+
+        async function sendMsg(){
+          const text = (input.value || '').trim();
+          if(!text) return;
+          append(text, true);
+          input.value = '';
+          typing(true);
+          try{
+            const res = await fetch("{{ route('frontend.chatbot.message') }}",{
+              method:'POST',
+              headers:{'Content-Type':'application/json','X-CSRF-TOKEN':'{{ csrf_token() }}'},
+              body: JSON.stringify({message:text})
+            });
+            const data = await res.json();
+            typing(false);
+            if(data.reply){ append(data.reply, false); }
+            else if(data.error){ append('Lỗi: '+(data.error)+(data.detail?'\nChi tiết: '+data.detail:''), false); }
+            else { append('Không có phản hồi từ máy chủ.', false); }
+          }catch(e){
+            typing(false);
+            append('Lỗi kết nối: '+ e.message, false);
+          }
+        }
+
+        if(fab){ fab.addEventListener('click', ()=>{ widget.classList.add('open'); input.focus(); }); }
+        if(closeBtn){ closeBtn.addEventListener('click', ()=> widget.classList.remove('open')); }
+        if(send){ send.addEventListener('click', sendMsg); }
+        if(input){ input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); sendMsg(); } }); }
+      })();
+    </script>
 </body>
 </html>

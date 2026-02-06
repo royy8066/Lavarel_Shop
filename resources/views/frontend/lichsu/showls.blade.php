@@ -20,8 +20,8 @@
             </div>
             <div class="right">
                 <ul>
-                    <li><a href="mailto:linhclear@gmail.com"><i class="bi bi-envelope"></i> linhclear@gmail.com</a></li>
-                    <li><a href="tel:0337 263 708"><i class="bi bi-telephone"></i> 0337 263 708</a></li>
+                    <li><a href="mailto:linhclear@gmail.com"><i class="bi bi-envelope"></i>rimdu12@gmail.com</a></li>
+                    <li><a href="tel:033 850 6457"><i class="bi bi-telephone"></i> 033 850 6457</a></li>
                 </ul>
             </div>
         </div>
@@ -91,6 +91,9 @@
             </a>
             <h2 style="margin-top:50px">Chi tiết đơn hàng #{{ $order->id }}</h2>
             <p><strong>Ngày đặt:</strong> {{ $order->created_at }}</p>
+            <p><strong>Địa chỉ:</strong> {{ $order->diachi }}</p>
+            <p><strong>Tỉnh/Thành phố:</strong> {{ $order->tinh }}</p>
+            <p><strong>Xã/Phường:</strong> {{ $order->xa_phuong }}</p>
             <p><strong>Trạng thái:</strong> {{ $order->trang_thai }}</p>
             <p><strong>Phương thức thanh toán:</strong> {{ $order->payment_method }}</p>
             <p><strong>Tổng tiền:</strong> {{ number_format($order->tongtien) }} VNĐ</p>

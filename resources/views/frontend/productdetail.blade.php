@@ -6,6 +6,8 @@
     <title>Chi Tiết Sản Phẩm</title>
     <!-- CSS Stylesheets -->
     <link rel="stylesheet" href="../assets/css/productdetail.css">
+    <link rel="stylesheet" href="../assets/css/product-zoom.css">
+    <link rel="stylesheet" href="../assets/css/comments.css">
     <link rel="stylesheet" href="../assets/css/icofont/icofont.min.css">
     <link rel="stylesheet" href="../assets/css/bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -20,8 +22,8 @@
             </div>
             <div class="right">
                 <ul>
-                    <li><a href="mailto:linhclear@gmail.com"><i class="bi bi-envelope"></i> linhclear@gmail.com</a></li>
-                    <li><a href="tel:0337 263 708"><i class="bi bi-telephone"></i> 0337 263 708</a></li>
+                    <li><a href="mailto:linhclear@gmail.com"><i class="bi bi-envelope"></i>rimdu12@gmail.com</a></li>
+                    <li><a href="tel:033 850 6457"><i class="bi bi-telephone"></i> 033 850 6457</a></li>
                     <!-- <li><a href="{{ route('frontend.cart') }}"><i class="bi bi-cart3" title="Giỏ hàng"></i> Giỏ hàng</a></li> -->
                 </ul>
             </div>
@@ -81,7 +83,7 @@
             <div class="main-list">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <div class="main-image">
+                        <div class="main-image product-image-zoom">
                             <img src="{{ asset('storage/' . $product->img) }}" class="card-img-top" alt="{{ $product->ten_sanpham }}">
                         </div>
                     </div>
@@ -100,30 +102,32 @@
                             </span>
                         </div>
 
+                        <div class="stock my-3">
+                            <span class="fw-bold">Tồn kho: </span>
+                            @if($product->stock <= 10)
+                                <span class="badge bg-danger">{{ $product->stock }} sản phẩm</span>
+                            @elseif($product->stock <= 50)
+                                <span class="badge bg-warning">{{ $product->stock }} sản phẩm</span>
+                            @else
+                                <span class="badge bg-success">{{ $product->stock }} sản phẩm</span>
+                            @endif
+                        </div>
+
                         <form method="POST" action="{{ route('addcart', $product->id) }}">
                             @csrf
                             <div class="mb-3">
                                 <label for="quantity" class="form-label">Số lượng:</label>
                                 <input type="number" name="quantity" id="quantity" value="1" min="1"
-                                    max="{{ $product->soluong ?? 100 }}" class="form-control w-25">
+                                    max="{{ $product->stock }}" class="form-control w-25">
                             </div>
-
-                            <style>
-                                /* a {
-                                    color: aliceblue;
-                                    text-decoration: none;
-                                } */
-                            </style>
-                            @if (Auth::guard('web')->check())
-                                <form action="{{ route('frontend.cart') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
-                                    </button>
-                                </form>
+                            @if($product->stock > 0)
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
+                                </button>
                             @else
-                                <a href="{{ route('frontend.login') }}" class="btn btn-warning">Đăng nhập để mua hàng</a>
+                                <button type="button" class="btn btn-secondary" disabled>
+                                    <i class="fas fa-times-circle"></i> Hết hàng
+                                </button>
                             @endif
                         </form>
                     </div>
@@ -131,6 +135,92 @@
             </div>
         </div>
     </main>
+
+    <!-- Comments Section -->
+    <section class="comments-section">
+        <div class="container">
+            <div class="comments-header">
+                <h3 class="comments-title">Bình luận</h3>
+                <span class="comment-count">{{ $comments->total() }}</span>
+            </div>
+
+            <!-- Comment Form -->
+            <div class="comment-form">
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <form id="commentForm" action="{{ route('comments.store', $product->id) }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="commentContent" class="form-label">Viết bình luận của bạn</label>
+                        <textarea name="content" id="commentContent" class="form-control" 
+                                  placeholder="Chia sẻ ý kiến của bạn về sản phẩm này..." 
+                                  maxlength="1000" required></textarea>
+                    </div>
+
+                    @if(!Auth::check())
+                        <div class="guest-fields">
+                            <div>
+                                <label for="guest_name" class="form-label">Tên của bạn</label>
+                                <input type="text" name="guest_name" id="guest_name" class="form-control" 
+                                       placeholder="Nhập tên của bạn" required>
+                            </div>
+                            <div>
+                                <label for="guest_email" class="form-label">Email</label>
+                                <input type="email" name="guest_email" id="guest_email" class="form-control" 
+                                       placeholder="email@example.com" required>
+                            </div>
+                        </div>
+                    @endif
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-paper-plane"></i> Gửi bình luận
+                    </button>
+                </form>
+            </div>
+
+            <!-- Comments List -->
+            <div class="comments-list">
+                @if($comments->count() > 0)
+                    @foreach($comments as $comment)
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <div>
+                                    <span class="comment-author">{{ $comment->author_name }}</span>
+                                    @if($comment->author_email)
+                                        <small class="text-muted">({{ $comment->author_email }})</small>
+                                    @endif
+                                </div>
+                                <small class="comment-date">{{ $comment->created_at->format('d/m/Y H:i') }}</small>
+                            </div>
+                            <div class="comment-content">
+                                {{ $comment->content }}
+                            </div>
+                            <div class="comment-actions">
+                                <button class="btn-like" data-comment-id="{{ $comment->id }}">
+                                    <i class="fas fa-thumbs-up"></i>
+                                    <span class="like-count">{{ $comment->likes }}</span>
+                                </button>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    <div class="comments-pagination">
+                        {{ $comments->links('pagination::bootstrap-5') }}
+                    </div>
+                @else
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-comments fa-3x mb-3"></i>
+                        <p>Chưa có bình luận nào. Hãy là người đầu tiên bình luận về sản phẩm này!</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </section>
+
     <!-- Footer-->
     <footer>
         <div class="footer-top">
@@ -171,5 +261,7 @@
     </footer>
    <!-- JavaScript -->
    <script src="../assets/js/javascript.js"></script>
+   <script src="../assets/js/product-zoom.js"></script>
+   <script src="../assets/js/comments.js"></script>
 </body>
 </html>

@@ -1,0 +1,98 @@
+/* Product Image Magnifier Glass */
+.product-image-zoom {
+    position: relative;
+    cursor: none;
+}
+
+.product-image-zoom img {
+    display: block;
+    width: 100%;
+}
+
+.magnifier-lens {
+    position: absolute;
+    border: 3px solid #000;
+    border-radius: 50%;
+    cursor: none;
+    width: 150px;
+    height: 150px;
+    display: none;
+    pointer-events: none;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.magnifier-result {
+    position: absolute;
+    border: 1px solid #000;
+    background: white;
+    width: 300px;
+    height: 300px;
+    display: none;
+    top: 0;
+    right: -320px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    overflow: hidden;
+}
+
+.magnifier-result img {
+    position: absolute;
+}
+
+/* Lightbox for fullscreen zoom */
+.image-lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 9999;
+    cursor: zoom-out;
+}
+
+.image-lightbox img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+}
+
+.image-lightbox .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.image-lightbox .close-btn:hover {
+    color: #ccc;
+}
+
+/* Product list hover zoom */
+.product-card .card-img-top {
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .card-img-top {
+    transform: scale(1.1);
+}
+
+/* Mobile: hide magnifier on touch devices */
+@media (max-width: 768px) {
+    .magnifier-lens,
+    .magnifier-result {
+        display: none !important;
+    }
+    
+    .product-image-zoom {
+        cursor: zoom-in;
+    }
+}

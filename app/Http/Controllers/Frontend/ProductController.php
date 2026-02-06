@@ -30,7 +30,8 @@ class ProductController extends Controller
 
     public function productdetail($id){
         $product = Product::findOrFail($id);
-        return view('frontend.productdetail', compact('product'));
+        $comments = $product->approvedComments()->paginate(10);
+        return view('frontend.productdetail', compact('product', 'comments'));
     }
 
     public function search(Request $request){

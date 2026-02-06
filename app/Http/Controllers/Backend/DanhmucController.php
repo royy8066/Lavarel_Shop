@@ -37,8 +37,8 @@ class DanhmucController extends Controller
     }
 
     public function showdanhmuc(Request $request){
-        $category = Category::orderBy('id', 'desc')->get();
-        return view('backend.category.showdanhmuc', compact('category'));
+        $categories = Category::orderBy('id', 'desc')->get();
+        return view('backend.category.showdanhmuc', compact('categories'));
     }
 
     public function edit($id){

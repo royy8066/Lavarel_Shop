@@ -20,8 +20,8 @@
             </div>
             <div class="right">
                 <ul>
-                    <li><a href="mailto:linhclear@gmail.com"><i class="bi bi-envelope"></i> linhclear@gmail.com</a></li>
-                    <li><a href="tel:0337 263 708"><i class="bi bi-telephone"></i> 0337 263 708</a></li>
+                    <li><a href="mailto:linhclear@gmail.com"><i class="bi bi-envelope"></i>rimdu12@gmail.com</a></li>
+                    <li><a href="tel:033 850 6457"><i class="bi bi-telephone"></i> 033 850 6457</a></li>
                     <li><a href="./carts.php"><i class="bi bi-cart3" title="Giỏ hàng"></i> Giỏ hàng</a></li>
                 </ul>
             </div>
@@ -103,7 +103,7 @@
                 <h3>Thông tin liên hệ</h3>
                 <p><i class="bi bi-geo-alt"></i> Tiên Phong - Tiên Phước - Quảng Nam</p>
                 <p><i class="bi bi-telephone"></i> +84 337 263 708</p>
-                <p><i class="bi bi-envelope-at"></i> linhclear@gmail.com</p>
+                <p><i class="bi bi-envelope-at"></i>rimdu12@gmail.com</p>
 
                 <div class="social-icons">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">

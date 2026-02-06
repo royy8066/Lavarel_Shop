@@ -14,6 +14,15 @@ class CartController extends Controller
 {
     public function cart() {
         $cart = session()->get('cart', []);
+        foreach ($cart as $id => $item) {
+            $product = Product::find($id);
+            if ($product) {
+                $cart[$id]['giasp'] = $product->giasp;
+                $cart[$id]['ten_sanpham'] = $product->ten_sanpham;
+                $cart[$id]['img'] = $product->img;
+            }
+        }
+        session()->put('cart', $cart);
         $total = collect($cart)->sum(fn($item) => $item['giasp'] * $item['quantity']);
         return view('frontend.cart', compact('cart', 'total'));
     }

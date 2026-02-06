@@ -21,12 +21,17 @@ class SanphamController extends Controller
 
     public function store(Request $request)
     {
+        // Chuẩn hóa giá: chấp nhận định dạng có dấu phân cách (ví dụ 1.600.000)
+        $sanitizedPrice = preg_replace('/[^0-9]/', '', (string) $request->giasp);
+        $request->merge(['giasp' => $sanitizedPrice]);
+
         $request->validate([
             'ten_sanpham' => 'required',
             'giasp' => 'required|numeric',
             'danhmuc_id' => 'required|exists:category,id',
             'img' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'mota' => 'required',
+            'stock' => 'required|integer|min:0',
         ]);
 
         $imagePath = null;
@@ -41,13 +46,14 @@ class SanphamController extends Controller
             'img' => $imagePath,
             'mota' => $request->mota,
             'status' => $request->status ?? 1,
+            'stock' => $request->stock ?? 0,
         ]);
         return redirect()->route('backend.product.addsanpham')->with('success', 'Thêm sản phẩm thành công!');
     }
 
     public function showsanpham(Request $request){
-        $product = Product::orderBy('id', 'desc')->get();
-        return view('backend.product.showsanpham', compact('product'));
+        $products = Product::orderBy('id', 'desc')->paginate(10);
+        return view('backend.product.showsanpham', compact('products'));
     }
 
     public function edit($id){
@@ -63,12 +69,17 @@ class SanphamController extends Controller
     }
 
     public function update(Request $request, $id){
+        // Chuẩn hóa giá: chấp nhận định dạng có dấu phân cách (ví dụ 1.600.000)
+        $sanitizedPrice = preg_replace('/[^0-9]/', '', (string) $request->giasp);
+        $request->merge(['giasp' => $sanitizedPrice]);
+
         $request->validate([
             'ten_sanpham' => 'required',
             'giasp' => 'required|numeric',
             'danhmuc_id' => 'required|exists:category,id',
             'img' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'mota' => 'required',
+            'stock' => 'required|integer|min:0',
         ]);
 
         $product = Product::findOrFail($id);
@@ -84,6 +95,7 @@ class SanphamController extends Controller
         'danhmuc_id' => $request->danhmuc_id,
         'mota' => $request->mota,
         'status' => $request->status ?? 1,
+        'stock' => $request->stock ?? 0,
     ]);
         return redirect()->route('backend.product.showsanpham')->with('success', 'Cập nhật sản phẩm thành công!');
     }

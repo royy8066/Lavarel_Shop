@@ -10,6 +10,7 @@ use App\Http\Controllers\Backend\DanhmucController;
 use App\Http\Controllers\Backend\SanphamController;
 use App\Http\Controllers\Backend\QlUserController;
 use App\Http\Controllers\Backend\QlCheckoutController;
+use App\Http\Controllers\Backend\StockController;
 
 // Frontend
 use App\Http\Controllers\Frontend\HometimeController;
@@ -19,7 +20,11 @@ use App\Http\Controllers\Frontend\PageController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\OrderController;
 use App\Http\Controllers\Frontend\VnpayController;
-
+use App\Http\Controllers\Frontend\OtpController;
+use App\Http\Controllers\Frontend\MomoController;
+use App\Http\Controllers\Frontend\ChatbotController;
+use App\Http\Controllers\Frontend\LocaleController;
+use App\Http\Controllers\Frontend\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +70,9 @@ Route::prefix('admin')->name('backend.')->group(function () {
         Route::get('donhang/showdh/{id}', [QlCheckoutController::class, 'showdh'])->name('donhang.showdh');
         Route::delete('donhang/delete/{id}', [QlCheckoutController::class, 'delete'])->name('donhang.delete');
         Route::put('donhang/{id}/duyet', [QlCheckoutController::class, 'duyetdh'])->name('donhang.duyetdh');
+         // Quản lý tồn kho
+        Route::get('stock', [StockController::class, 'index'])->name('stock.index');
+        Route::put('stock/{id}', [StockController::class, 'update'])->name('stock.update');
          // Hiển thị profile
         Route::get('profile', [HomeController::class, 'profile'])->name('profile');
         Route::post('update', [HomeController::class, 'update'])->name('update');
@@ -109,10 +117,33 @@ Route::post('checkout', [OrderController::class, 'store'])->name('frontend.check
 Route::get('checkout', [OrderController::class, 'showCheckoutForm'])->name('frontend.checkout');
 Route::post('vnpay', [VnpayController::class, 'vnpay'])->name('frontend.vnpay');
 Route::get('/vnpay_return', [VnpayController::class, 'vnpayReturn'])->name('vnpay.return');
+Route::post('momo', [MomoController::class, 'momo'])->name('frontend.momo');
+Route::get('/momo_return', [MomoController::class, 'momoReturn'])->name('momo.return');
+Route::post('/momo_ipn', [MomoController::class, 'momoIpn'])->name('momo.ipn');
 
 // lịch sử đơn hàng
 Route::get('history', [OrderController::class, 'history'])->name('frontend.lichsu.history');
 Route::get('detail/{id}', [OrderController::class, 'detail']) ->name('frontend.lichsu.detail');
+Route::get('order/confirmation', [OrderController::class, 'confirmation'])->name('frontend.order.confirmation');
+
+// Chatbot
+Route::get('chatbot', [ChatbotController::class, 'index'])->name('frontend.chatbot');
+Route::post('chatbot/message', [ChatbotController::class, 'message'])->name('frontend.chatbot.message');
+
+// Invoice download
+Route::get('invoice/{order}', [OrderController::class, 'downloadInvoice'])->name('frontend.invoice.download')->middleware('signed');
+
+// OTP verification
+Route::post('otp/send', [OtpController::class, 'sendOtp'])->name('otp.send');
+Route::post('otp/verify', [OtpController::class, 'verifyOtp'])->name('otp.verify');
+Route::get('otp/check', [OtpController::class, 'checkOtpVerified'])->name('otp.check');
+
+// Language setting
+Route::post('locale/set', [LocaleController::class, 'setLocale'])->name('locale.set');
+
+// Comments
+Route::post('comments/{product}/store', [CommentController::class, 'store'])->name('comments.store');
+Route::post('comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
 
 // Hiển thị profile
 Route::get('profile', [HometimeController::class, 'profile'])->name('frontend.profile')->middleware('auth');

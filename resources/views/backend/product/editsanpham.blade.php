@@ -296,6 +296,11 @@
                     </select>
                 </div>
 
+                <div class="mb-3">
+                    <label>Số lượng tồn kho</label>
+                    <input type="number" name="stock" value="{{ $product->stock ?? 0 }}" class="form-control" min="0" required>
+                </div>
+
                 <button type="submit" class="btn btn-primary">Cập nhật</button>
                 <a href="{{ route('backend.product.showsanpham') }}" class="btn btn-secondary">Quay lại</a>
             </form>

@@ -6,6 +6,7 @@
     <title>Sản Phẩm Trầm Hương</title>
     <!-- CSS Stylesheets -->
     <link rel="stylesheet" href="{{('assets/css/product.css')}}">
+    <link rel="stylesheet" href="{{('assets/css/product-zoom.css')}}">
     <link rel="stylesheet" href="{{('assets/css/bootstrap5.min.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
@@ -19,8 +20,8 @@
             </div>
             <div class="right">
                 <ul>
-                    <li><a href="mailto:linhclear@gmail.com"><i class="bi bi-envelope"></i> linhclear@gmail.com</a></li>
-                    <li><a href="tel:0337 263 708"><i class="bi bi-telephone"></i> 0337 263 708</a></li>
+                    <li><a href="mailto:linhclear@gmail.com"><i class="bi bi-envelope"></i>rimdu12@gmail.com</a></li>
+                    <li><a href="tel:033 850 6457"><i class="bi bi-telephone"></i> 033 850 6457</a></li>
                     <!-- <li><a href="{{ route('frontend.cart')}}"><i class="bi bi-cart3" title="Giỏ hàng"></i> Giỏ hàng</a></li> -->
                 </ul>
             </div>
@@ -92,11 +93,20 @@
                     <div class="product-top">
                         <div class="rowmen">
                             @foreach($products as $product)
-                                <div class="card m-2" style="width: 18rem;">
+                                <div class="card m-2 product-card" style="width: 18rem;">
                                     <img src="{{ asset('storage/' . $product->img) }}" class="card-img-top" alt="{{ $product->ten_sanpham }}">
                                     <div class="card-body">
                                         <h5 class="card-title"><a href="{{ route('frontend.productdetail', $product->id) }}">{{ $product->ten_sanpham }}</a></h5>
                                         <p class="card-text">Giá: {{ number_format($product->giasp, 0, ',', '.') }} VNĐ</p>
+                                        <p class="card-text">
+                                            @if($product->stock <= 10)
+                                                <span class="badge bg-danger">Tồn: {{ $product->stock }}</span>
+                                            @elseif($product->stock <= 50)
+                                                <span class="badge bg-warning">Tồn: {{ $product->stock }}</span>
+                                            @else
+                                                <span class="badge bg-success">Tồn: {{ $product->stock }}</span>
+                                            @endif
+                                        </p>
                                     </div>
                                 </div>
                             @endforeach
@@ -151,5 +161,6 @@
     </footer>
     <!-- JavaScript -->
     <script src="../assets/js/javascript.js"></script>
+    <script src="../assets/js/product-zoom.js"></script>
 </body>
 </html>
